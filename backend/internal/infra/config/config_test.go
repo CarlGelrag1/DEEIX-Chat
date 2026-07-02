@@ -170,6 +170,31 @@ security:
 	}
 }
 
+func TestLoadReadsFrameAncestors(t *testing.T) {
+	cleanupConfigEnv(t)
+
+	configPath := filepath.Join(t.TempDir(), "config.yaml")
+	configBody := []byte(`
+security:
+  frame_ancestors: "http://localhost:16789"
+`)
+	if err := os.WriteFile(configPath, configBody, 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	t.Setenv("CONFIG_FILE", configPath)
+
+	cfg := Load()
+	if cfg.FrameAncestors != "http://localhost:16789" {
+		t.Fatalf("expected frame ancestors from config, got %q", cfg.FrameAncestors)
+	}
+
+	t.Setenv("FRAME_ANCESTORS", "https://bi-pid.example.test")
+	cfg = Load()
+	if cfg.FrameAncestors != "https://bi-pid.example.test" {
+		t.Fatalf("expected frame ancestors from env, got %q", cfg.FrameAncestors)
+	}
+}
+
 func TestValidateAllowsOnlyDevAndProdEnvironment(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -219,6 +244,7 @@ func cleanupConfigEnv(t *testing.T) {
 		"STORAGE_ROOT_DIR",
 		"GEOIP_DATABASE_PATH",
 		"TURNSTILE_SITEVERIFY_URL",
+		"FRAME_ANCESTORS",
 		"POSTGRES_DSN",
 	}
 	for _, key := range keys {

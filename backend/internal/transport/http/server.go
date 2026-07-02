@@ -94,7 +94,7 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 	})))
 	engine.Use(middleware.RequestID())
 	engine.Use(middleware.AccessLog(log))
-	engine.Use(middleware.SecurityHeaders(snapshot.Env))
+	engine.Use(middleware.SecurityHeaders(snapshot.Env, snapshot.FrameAncestors))
 	engine.Use(middleware.CORS(snapshot.CORSAllowOrigin))
 
 	engine.GET("/healthz", func(c *gin.Context) {
