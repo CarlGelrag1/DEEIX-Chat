@@ -36,6 +36,10 @@ WORKDIR /src/backend
 
 ARG GIT_COMMIT=unknown
 ARG BUILD_TIME=""
+ARG GOPROXY=https://proxy.golang.org,direct
+ARG GOSUMDB=sum.golang.org
+ENV GOPROXY=${GOPROXY}
+ENV GOSUMDB=${GOSUMDB}
 COPY VERSION /src/VERSION
 COPY backend/go.mod backend/go.sum ./
 
